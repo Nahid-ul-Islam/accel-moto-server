@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const ObjectId = require('mongodb').ObjectId;
 const { MongoClient, ServerApiVersion } = require('mongodb');
 require('dotenv').config();
 
@@ -14,10 +15,20 @@ app.use(express.json());
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.6myik.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
+
+// client.connect(err => {
+//     const bikesCollection = client.db("moto").collection("bikes");
+//     console.log('db connected');
+//     // perform actions on the collection object
+//     client.close();
+//   });
+
+
 async function run() {
     try {
         await client.connect();
         const bikesCollection = client.db("moto").collection("bikes");
+        console.log('db connected');
         //get items
         //http://localhost:5000/bikes
         app.get('/bikes', async (req, res) => {
@@ -27,12 +38,37 @@ async function run() {
             res.send(result);
         });
 
-        //add item
-        app.post('/bikes', async(req, res) => {
-            const newItem = req.body;
-            const result = await bikesCollection.insertOne(newItem);
+        //get single item
+        app.get('/bikes/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = {_id: ObjectId(id)};
+            const result = await bikesCollection.findOne(query);
             res.send(result);
         });
+
+        //update item
+         app.put('/bikes/:id', async(req, res) => {
+             const id = req.params.id;
+             //console.log("id", id);
+             const updateItem = req.body;
+             //console.log(updateItem)
+             const filter = {_id: ObjectId(id)};
+             const options = { upsert: true };
+             const updateDoc = {
+                 $set: {
+                     quantity : updateItem.quantity
+                 }
+             };
+             const result = await bikesCollection.updateOne(filter, updateDoc, options);
+             res.send(result);
+         });
+
+        //add item
+        // app.post('/bikes', async(req, res) => {
+        //     const newItem = req.body;
+        //     const result = await bikesCollection.insertOne(newItem);
+        //     res.send(result);
+        // });
     }
     finally {
         // await client.close();
