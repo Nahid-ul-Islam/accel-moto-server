@@ -63,13 +63,22 @@ async function run() {
              res.send(result);
          });
 
+         //delte an item
+         app.delete('/bikes/:id', async(req, res) => {
+            const id = req.params.id;
+            const query = {_id: ObjectId(id)}; 
+            const result = await bikesCollection.deleteOne(query);
+            res.send(result);
+        })
+    }
+
+
         //add item
         // app.post('/bikes', async(req, res) => {
         //     const newItem = req.body;
         //     const result = await bikesCollection.insertOne(newItem);
         //     res.send(result);
         // });
-    }
     finally {
         // await client.close();
     }
