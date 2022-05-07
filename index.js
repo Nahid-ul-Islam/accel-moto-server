@@ -69,16 +69,19 @@ async function run() {
             const query = {_id: ObjectId(id)}; 
             const result = await bikesCollection.deleteOne(query);
             res.send(result);
-        })
+        });
+
+        //add a new item
+        app.post('/bikes', async(req, res) => {
+            const newItem = req.body;
+            console.log('adding new item', newItem);
+            const result = await bikesCollection.insertOne(newItem);
+            res.send(result);
+         });
     }
 
 
-        //add item
-        // app.post('/bikes', async(req, res) => {
-        //     const newItem = req.body;
-        //     const result = await bikesCollection.insertOne(newItem);
-        //     res.send(result);
-        // });
+        
     finally {
         // await client.close();
     }
