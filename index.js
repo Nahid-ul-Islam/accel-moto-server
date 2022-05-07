@@ -29,6 +29,8 @@ async function run() {
         await client.connect();
         const bikesCollection = client.db("moto").collection("bikes");
         console.log('db connected');
+
+
         //get items
         //http://localhost:5000/bikes
         app.get('/bikes', async (req, res) => {
@@ -38,6 +40,7 @@ async function run() {
             res.send(result);
         });
 
+
         //get single item
         app.get('/bikes/:id', async (req, res) => {
             const id = req.params.id;
@@ -45,6 +48,7 @@ async function run() {
             const result = await bikesCollection.findOne(query);
             res.send(result);
         });
+
 
         //update item
          app.put('/bikes/:id', async(req, res) => {
@@ -63,6 +67,7 @@ async function run() {
              res.send(result);
          });
 
+
          //delte an item
          app.delete('/bikes/:id', async(req, res) => {
             const id = req.params.id;
@@ -71,6 +76,7 @@ async function run() {
             res.send(result);
         });
 
+
         //add a new item
         app.post('/bikes', async(req, res) => {
             const newItem = req.body;
@@ -78,6 +84,16 @@ async function run() {
             const result = await bikesCollection.insertOne(newItem);
             res.send(result);
          });
+
+
+         //search query by email
+         app.get('/my-bikes', async (req, res) => {
+            const email = req.query.email;
+            const query = {email:email};
+            const curosr = bikesCollection.find(query);
+            const result = await curosr.toArray();
+            res.send(result);
+        });
     }
 
 
