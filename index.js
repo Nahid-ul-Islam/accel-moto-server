@@ -12,21 +12,22 @@ const port = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-function verifyJWT(req, res, next) {
-    const authHeader = req.headers.authorization;
-    if (!authHeader) {
-        return res.status(401).send({ message: 'unauthorized access' });
-    }
-    const token = authHeader.split(' ')[1];
-    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
-        if (err) {
-            return res.status(403).send({ message: 'FORBIDDEN ACCESS' });
-        }
-        console.log('decoded', decoded);
-        req.decoded = decoded;
-        next();
-    })
-}
+//jwt
+// function verifyJWT(req, res, next) {
+//     const authHeader = req.headers.authorization;
+//     if (!authHeader) {
+//         return res.status(401).send({ message: 'unauthorized access' });
+//     }
+//     const token = authHeader.split(' ')[1];
+//     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
+//         if (err) {
+//             return res.status(403).send({ message: 'FORBIDDEN ACCESS' });
+//         }
+//         console.log('decoded', decoded);
+//         req.decoded = decoded;
+//         next();
+//     })
+// }
 
 
 
@@ -49,15 +50,15 @@ async function run() {
         console.log('db connected');
 
 
-
-        //AUTH
-        app.post('/gettoken', async (req, res) => {
-            const user = req.body;
-            const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
-                expiresIn: '5d'
-            })
-            res.send({ accessToken });
-        })
+        //jwt
+        // //AUTH
+        // app.post('/gettoken', async (req, res) => {
+        //     const user = req.body;
+        //     const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
+        //         expiresIn: '5d'
+        //     })
+        //     res.send({ accessToken });
+        // })
 
         //get items
         //http://localhost:5000/bikes
@@ -115,18 +116,23 @@ async function run() {
 
 
         //search query by email
-        app.get('/my-bikes', verifyJWT, async (req, res) => {
-            const decodedEmail = req.decoded.email;
+        app.get('/my-bikes', async (req, res) => {
+            //jwt
+            //const decodedEmail = req.decoded.email;
             const email = req.query.email;
-            if (email === decodedEmail) {
-                const query = { email: email };
-                const curosr = bikesCollection.find(query);
-                const result = await curosr.toArray();
-                res.send(result);
-            }
-            else{
-                res.status(403).send({message: 'FORBIDDEN ACCESS'})
-            }
+            const query = { email: email };
+            const curosr = bikesCollection.find(query);
+            const result = await curosr.toArray();
+            res.send(result);
+            // if (email === decodedEmail) {
+            //     const query = { email: email };
+            //     const curosr = bikesCollection.find(query);
+            //     const result = await curosr.toArray();
+            //     res.send(result);
+            // }
+            // else{
+            //     res.status(403).send({message: 'FORBIDDEN ACCESS'})
+            // }
 
         });
     }
