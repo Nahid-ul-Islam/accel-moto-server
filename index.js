@@ -151,6 +151,10 @@ app.get('/', (req, res) => {
     res.send('got the data form serverrrrr');
 });
 
+app.get('/deployCheck', (req, res) => {
+    res.send('heroku is working fine after making any change to the server');
+})
+
 app.listen(port, () => {
     console.log('Listening to port', port);
 });
